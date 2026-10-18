@@ -30,6 +30,13 @@ describe("recording download", () => {
     expect(homeBase2RecordingPath(100, "20260101120000")).toBeUndefined();
   });
 
+  it("keeps a battery doorbell's h264_ prefix in the path, and no other prefix", () => {
+    expect(homeBase2RecordingPath(1, "h264_20260101120000")).toBe("/media/mmcblk0p1/Camera01/h264_20260101120000.dat");
+    expect(homeBase2RecordingPath(1, "h265_20260101120000")).toBeUndefined();
+    expect(homeBase2RecordingPath(1, "h264_../20260101120000")).toBeUndefined();
+    expect(homeBase2RecordingPath(1, "h264_2026010112000")).toBeUndefined();
+  });
+
   it("frames the request as five zero bytes and two 128-byte strings, level-1 encrypted", () => {
     const key = Buffer.alloc(16, 3);
     const body = buildStringPairCommandPayload("/media/x.dat", "0".repeat(40), 1, key);

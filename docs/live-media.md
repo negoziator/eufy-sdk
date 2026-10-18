@@ -347,14 +347,15 @@ stream.)
 ## Recordings stored on a HomeBase 2
 
 A HomeBase 2 (T8010) keeps each event recording of its attached cameras, and names it in the event push:
-`payload.p` is the recording name and `cipher` the key id it was stored under. `downloadRecording`
+`payload.p` is the recording name and `cipher` the key id it was stored under. A battery doorbell's push
+carries the name in `payload.file_path` instead, prefixed `h264_`; pass it as it comes. `downloadRecording`
 fetches that recording over the station's P2P session and decodes it; it does not wake the camera.
 
 ```ts
 import { RecordingDownloadError } from "@mega-yfue/eufy-sdk";
 
 eufy.on("push", async (ev) => {
-  const recording = ev.payload.p;
+  const recording = ev.payload.p ?? ev.payload.file_path;
   if (!ev.deviceSn || typeof recording !== "string" || ev.cipher === undefined) return;
   const cam = (await eufy.getDevice(ev.deviceSn)).camera?.();
   try {
